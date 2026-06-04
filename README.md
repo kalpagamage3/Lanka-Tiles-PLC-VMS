@@ -10,18 +10,29 @@ We have updated the project configuration (`vite.config.ts`) to use **relative b
 
 You can deploy this application to GitHub Pages using either of the two methods below.
 
-### Option A: The Standalone Single-File Version (Easiest)
-If you want to host the app instantly as a single `.html` file with zero build tools:
-1. Locate `/public/index-standalone.html` in this project.
-2. Rename it to `index.html`.
-3. Upload it directly to your GitHub repository.
-4. Enable **GitHub Pages** under repository **Settings > Pages** from the `main` or `master` branch.
-5. Your application will load instantly with simulated local database persistence (utilizing HTML5 `localStorage` securely inside your browser)!
+### Option A: Fully Automated GitHub Actions Deployment (Easiest & Highly Recommended!)
+We have pre-configured a top-tier **GitHub Actions Workflow** (`.github/workflows/deploy.yml`) in this repository. This means GitHub will automatically build your React+Vite app and deploy it for you in the cloud every time you upload your code!
+
+To activate this in **2 simple clicks**:
+1. Go to your GitHub repository in your web browser.
+2. Click on **Settings** (the gear icon tab in the top navigation bar of your repo page).
+3. On the left sidebar menu under "Code and automation", click on **Pages**.
+4. In the **Build and deployment > Source** section, change the dropdown from **"Deploy from a branch"** to **"GitHub Actions"**.
+5. **That is it!** Go to the **Actions** tab at the top of your repository to watch the deployment run. It will be live and fully functional in under 60 seconds with no command line required!
 
 ---
 
-### Option B: Deploying the Standard React + Vite Build (Recommended)
-This deploys the full-performance, optimized React bundle:
+### Option B: The Standalone Single-File Version (Zero Build Tools Needed!)
+If you just want a single, zero-dependency static HTML file to double-click locally or upload directly:
+1. Locate the file **`/public/index-standalone.html`** in this repository.
+2. Rename it to `index.html` and move it to the root of your folder.
+3. Commit and push it directly to your GitHub repository or host it anywhere.
+4. It works instantly using web-hosted CDNs for React, Babel, and Tailwind, persisting your database state locally inside your browser via HTML5 `localStorage`!
+
+---
+
+### Option C: Manual Command-Line Build & Deploy (For Developers)
+If you prefer to compile and deploy the optimized production bundle manually from your local machine:
 
 #### Step 1: Export the Code from AI Studio
 1. Open the AI Studio project settings menu (the **Gear Icon ⚙️** at the top right of the screen).
