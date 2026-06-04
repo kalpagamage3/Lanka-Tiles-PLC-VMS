@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_ \\-&\\.,\\(\\)\']+$');
+    }
+
+    function incoming(req) {
+      return req.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Zone collection rules
+    match /zones/{zoneId} {
+      allow read: if true;
+      allow write: if isValidId(zoneId) && 
+        incoming(request).keys().hasAll(['name', 'color']) &&
+        incoming(request).keys().size() == 2 &&
+        incoming(request).name is string &&
+        incoming(request).color in ['green', 'yellow', 'amber', 'red'];
+    }
+
+    // Host directory rules
+    match /hosts/{hostId} {
+      allow read: if true;
+      allow write: if isValidId(hostId) &&
+        incoming(request).keys().hasAll(['name', 'designation']) &&
+        incoming(request).name is string &&
+        incoming(request).designation is string;
+    }
+
+    // Pre-registration rules (submitted by employees on their mobiles, checked in / edited by guardroom)
+    match /preRegs/{preRegId} {
+      allow read: if true;
+      allow create: if isValidId(preRegId) &&
+        incoming(request).keys().hasAll(['id', 'type', 'status', 'submittedAt', 'members', 'photoAllowed']) &&
+        incoming(request).id == preRegId &&
+        incoming(request).type in ['individual', 'group'] &&
+        incoming(request).status == 'pending' &&
+        incoming(request).photoAllowed is bool &&
+        incoming(request).members is list &&
+        incoming(request).members.size() > 0;
+        
+      allow update, delete: if isValidId(preRegId) &&
+        (incoming(request).status in ['pending', 'checked-in', 'cancelled']);
+    }
+
+    // Visitor check-in/out records rules
+    match /visitors/{visitorId} {
+      allow read: if true;
+      allow create: if isValidId(visitorId) &&
+        incoming(request).keys().hasAll(['id', 'name', 'nic', 'phone', 'hostName', 'zones', 'color', 'pass', 'isGroup', 'groupCount', 'photoAllowed', 'status', 'checkIn']) &&
+        incoming(request).id == visitorId &&
+        incoming(request).name is string &&
+        incoming(request).nic is string &&
+        incoming(request).status == 'in' &&
+        incoming(request).pass is string &&
+        incoming(request).zones is list &&
+        incoming(request).color in ['green', 'yellow', 'amber', 'red'];
+        
+      allow update: if isValidId(visitorId) &&
+        (incoming(request).status in ['in', 'out']);
+        
+      allow delete: if isValidId(visitorId);
+    }
+
+    // Config collection rules
+    match /config/{configId} {
+      allow read: if true;
+      allow write: if isValidId(configId);
+    }
+  }
+}

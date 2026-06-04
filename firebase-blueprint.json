@@ -1,0 +1,107 @@
+{
+  "entities": {
+    "Visitor": {
+      "title": "Visitor",
+      "description": "Represents an active or historical checked-in visitor or group on site.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique visitor log sequential ID." },
+        "prId": { "type": "string", "description": "Associated pre-registration ID, if any." },
+        "name": { "type": "string", "description": "Full name of the visitor or group leader." },
+        "nic": { "type": "string", "description": "NIC or Passport number." },
+        "phone": { "type": "string", "description": "Contact phone number." },
+        "company": { "type": "string", "description": "Visitor organization or company." },
+        "purpose": { "type": "string", "description": "Purpose of the visit." },
+        "hostName": { "type": "string", "description": "Name of the employee host." },
+        "hostDesignation": { "type": "string", "description": "Designation of the host." },
+        "hostDept": { "type": "string", "description": "Department of the host." },
+        "hostPhone": { "type": "string", "description": "Intercom or contact of the host." },
+        "vehicle": { "type": "string", "description": "Vehicle number plate, if driving." },
+        "zones": { "type": "array", "description": "List of authorized zones." },
+        "color": { "type": "string", "description": "Color-code ranking determined by zones (green, yellow, amber, red)." },
+        "pass": { "type": "string", "description": "ID of physical card issued (e.g. G01, Y04)." },
+        "isGroup": { "type": "boolean", "description": "Whether checking in as a group." },
+        "groupCount": { "type": "number", "description": "Total number of people in the group." },
+        "groupMembers": { "type": "array", "description": "List of group member objects with name, nic, company." },
+        "drivers": { "type": "array", "description": "List of optional drivers with name, nic, vehicle." },
+        "photoAllowed": { "type": "boolean", "description": "True if photography/videography is explicitly permitted." },
+        "status": { "type": "string", "enum": ["in", "out"], "description": "Current status on site." },
+        "checkIn": { "type": "string", "format": "date-time", "description": "ISO timestamp of check-in." },
+        "checkOut": { "type": "string", "format": "date-time", "description": "ISO timestamp of check-out." }
+      },
+      "required": ["id", "name", "nic", "phone", "hostName", "zones", "color", "pass", "isGroup", "groupCount", "photoAllowed", "status", "checkIn"]
+    },
+    "PreRegistration": {
+      "title": "PreRegistration",
+      "description": "Pre-registered visits created by employees or visitors in advance.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Custom PR sequential ID (e.g. PR0001)." },
+        "type": { "type": "string", "enum": ["individual", "group"], "description": "Pre-registration type." },
+        "status": { "type": "string", "enum": ["pending", "checked-in", "cancelled"], "description": "Approval or arrival status." },
+        "submittedAt": { "type": "string", "format": "date-time", "description": "ISO registration creation timestamp." },
+        "photoAllowed": { "type": "boolean", "description": "Photography/videography permission." },
+        "members": { "type": "array", "description": "Array of pre-registered visitors, leader is first element." },
+        "drivers": { "type": "array", "description": "Array of drivers." },
+        "visitorId": { "type": "string", "description": "Checked-in visitor record ID." }
+      },
+      "required": ["id", "type", "status", "submittedAt", "members", "photoAllowed"]
+    },
+    "Host": {
+      "title": "Host",
+      "description": "Lanka Tiles employee host directory record.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "designation": { "type": "string" },
+        "dept": { "type": "string" },
+        "phone": { "type": "string" }
+      },
+      "required": ["name", "designation"]
+    },
+    "Zone": {
+      "title": "Zone",
+      "description": "Configured access zone and its color code.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "color": { "type": "string", "enum": ["green", "yellow", "amber", "red"] }
+      },
+      "required": ["name", "color"]
+    },
+    "VMSConfig": {
+      "title": "VMSConfig",
+      "description": "App settings containing pass counts and metadata.",
+      "type": "object",
+      "properties": {
+        "passTotals": { "type": "object" },
+        "adminPw": { "type": "string" },
+        "idSeq": { "type": "number" },
+        "prSeq": { "type": "number" }
+      },
+      "required": ["adminPw"]
+    }
+  },
+  "firestore": {
+    "visitors": {
+      "schema": "Visitor",
+      "description": "Collection of all active and historical check-in matches."
+    },
+    "preRegs": {
+      "schema": "PreRegistration",
+      "description": "Collection of pre-registrations created for future visits."
+    },
+    "hosts": {
+      "schema": "Host",
+      "description": "Lanka Tiles directory of hosts."
+    },
+    "zones": {
+      "schema": "Zone",
+      "description": "Lanka Tiles color-coded manufacturing and office zones."
+    },
+    "config": {
+      "schema": "VMSConfig",
+      "description": "VMS global variables, sequences, passwords, and pass limits."
+    }
+  }
+}

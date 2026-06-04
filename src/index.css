@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Open Sans", system-ui, sans-serif;
+  --font-display: "Raleway", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-lt-navy: #1b3a6b;
+  --color-lt-navy-dk: #122a52;
+  --color-lt-navy-md: #234d8a;
+  --color-lt-red: #c8102e;
+  --color-lt-red-dk: #a50d25;
+  --color-lt-red-lt: #fdf0f2;
+  --color-lt-red-bd: #f5b8c2;
+
+  --color-lt-bg: #f5f7fa;
+  --color-lt-border: #dde2ea;
+
+  /* Zone pass colors */
+  --color-zone-green: #15803d;
+  --color-zone-green-bg: #dcfce7;
+  --color-zone-green-bd: #86efac;
+
+  --color-zone-yellow: #a16207;
+  --color-zone-yellow-bg: #fef9c3;
+  --color-zone-yellow-bd: #fde047;
+
+  --color-zone-amber: #b45309;
+  --color-zone-amber-bg: #fef3c7;
+  --color-zone-amber-bd: #fcd34d;
+
+  --color-zone-red: #dc2626;
+  --color-zone-red-bg: #fee2e2;
+  --color-zone-red-bd: #fca5a5;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-lt-bg);
+  color: #1a2333;
+}
+
+/* Animations helper */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s infinite;
+}

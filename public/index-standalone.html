@@ -1,0 +1,2147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lanka Tiles VMS</title>
+    <!-- SVG Favicon with VMS lettering in Lanka Tiles branding colors -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231b3a6b'/%3E%3Crect x='8' y='8' width='84' height='84' rx='14' fill='none' stroke='%23c8102e' stroke-width='6'/%3E%3Ctext x='50' y='62' font-family='sans-serif' font-weight='900' font-size='36' fill='%23ffffff' text-anchor='middle' letter-spacing='1'%3EVMS%3C/text%3E%3C/svg%3E" />
+    <link rel="alternate icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Google Fonts: Open Sans for Body, Raleway for Headings, JetBrains Mono for Code/Status -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS Script CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["'Open Sans'", "system-ui", "sans-serif"],
+              display: ["'Raleway'", "sans-serif"],
+              mono: ["'JetBrains Mono'", "ui-monospace", "SFMono-Regular", "monospace"]
+            },
+            colors: {
+              lt: {
+                navy: "#1b3a6b",
+                "navy-dk": "#122a52",
+                "navy-md": "#234d8a",
+                red: "#c8102e",
+                "red-dk": "#a50d25",
+                "red-lt": "#fdf0f2",
+                "red-bd": "#f5b8c2",
+                bg: "#f5f7fa",
+                border: "#dde2ea",
+                muted: "#5a6e85"
+              }
+            },
+            boxShadow: {
+              '3xs': '0 1px 2px rgba(0,0,0,0.05)',
+              'xs': '0 1px 3px rgba(0,0,0,0.1)'
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- React 18 & ReactDOM & Babel CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      body {
+        font-family: 'Open Sans', system-ui, sans-serif;
+        background-color: #f5f7fa;
+        color: #1a2333;
+      }
+      /* Custom scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      .inp {
+        background-color: #ffffff;
+        border: 1px solid #dde2ea;
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        transition: all 150ms;
+        outline: none;
+        color: #1e293b;
+      }
+      .inp:focus {
+        border-color: #1b3a6b;
+        box-shadow: 0 0 0 2px rgba(27, 58, 107, 0.15);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.025em;
+        text-transform: uppercase;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        transition: all 150ms;
+        cursor: pointer;
+        user-select: none;
+      }
+      .btn-primary {
+        background-color: #1b3a6b;
+        color: #ffffff;
+        border: 1px solid transparent;
+      }
+      .btn-primary:hover {
+        background-color: #122a52;
+      }
+      .btn-danger {
+        background-color: #c8102e;
+        color: #ffffff;
+        border: 1px solid transparent;
+      }
+      .btn-danger:hover {
+        background-color: #a50d25;
+      }
+      .btn-ghost {
+        background-color: transparent;
+        color: #475569;
+        border: 1px solid transparent;
+      }
+      .btn-ghost:hover {
+        background-color: #f1f5f9;
+        color: #1e293b;
+      }
+      .btn-sm {
+        font-size: 0.7rem;
+        padding: 0.375rem 0.75rem;
+      }
+      .btn-xs {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+      }
+    </style>
+  </head>
+  <body class="bg-lt-bg">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // ── Inline SVGs Components (To avoid external asset loading failures) ────
+      const SvgIcons = {
+        Dashboard: () => (
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z" /></svg>
+        ),
+        PreReg: () => (
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+        ),
+        CheckIn: () => (
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+        ),
+        VisitorLog: () => (
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+        ),
+        Admin: () => (
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+        ),
+        Search: () => (
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+        ),
+        Trash: () => (
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+        ),
+        Edit: () => (
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+        ),
+        Export: () => (
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+        ),
+        CheckCircle: () => (
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        )
+      };
+
+      // ── Initial Default Store State Data ──────────────────────────────────────
+      const DEFAULT_CONFIG = {
+        adminPw: 'lanka2026',
+        idSeq: 15,
+        prSeq: 104,
+        passTotals: { G: 10, Y: 10, A: 10, R: 10 }
+      };
+
+      const DEFAULT_ZONES = [
+        { name: 'HR', color: 'green' },
+        { name: 'Accounts', color: 'green' },
+        { name: 'TPM', color: 'yellow' },
+        { name: 'Factory office', color: 'yellow' },
+        { name: 'Stores', color: 'amber' },
+        { name: 'Engineering', color: 'amber' },
+        { name: 'Special Projects', color: 'amber' },
+        { name: 'Lab', color: 'amber' },
+        { name: 'Powder preparation', color: 'red' },
+        { name: 'Press - Glazing Lines', color: 'red' },
+        { name: 'Glaze Preparation', color: 'red' },
+        { name: 'Sorting', color: 'red' },
+        { name: 'Mosaic', color: 'red' },
+        { name: 'Polishing', color: 'red' }
+      ];
+
+      const DEFAULT_HOSTS = [
+        { name: 'Nimal Jayawardena', designation: 'Factory Manager', dept: 'Production', phone: '0771234567' },
+        { name: 'Dilani Fernando', designation: 'HR Officer', dept: 'Human Resources', phone: '0779876543' },
+        { name: 'Kanishka Silva', designation: 'Chemist', dept: 'R&D Lab', phone: '0711122334' },
+        { name: 'Pradeep Perera', designation: 'Lead Engineer', dept: 'Management Office', phone: '0722233445' }
+      ];
+
+      const DEFAULT_PREREGS = [
+        {
+          id: 'PR0101',
+          type: 'individual',
+          status: 'pending',
+          submittedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+          photoAllowed: true,
+          members: [
+            {
+              name: 'Aruni Wijewardene',
+              nic: '198756411223',
+              phone: '0775647890',
+              company: 'Brandix PLC',
+              purpose: 'Supply Chain Meeting',
+              zones: ['HR', 'Accounts'],
+              hostName: 'Dilani Fernando',
+              isLeader: true
+            }
+          ],
+          drivers: []
+        },
+        {
+          id: 'PR0102',
+          type: 'group',
+          status: 'pending',
+          submittedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+          photoAllowed: false,
+          members: [
+            { name: 'Sunil Shantha', nic: '197607119041', phone: '0721102233', company: 'DFCC Bank', purpose: 'Financial Audit', zones: ['Accounts'], hostName: 'Dilani Fernando', isLeader: true },
+            { name: 'Janaka Perera', nic: '198425112233', phone: '', company: 'DFCC Bank', purpose: 'Financial Audit', zones: ['Accounts'], hostName: 'Dilani Fernando', isLeader: false },
+            { name: 'Minoli Silva', nic: '199514002344', phone: '', company: 'DFCC Bank', purpose: 'Financial Audit', zones: ['Accounts'], hostName: 'Dilani Fernando', isLeader: false }
+          ],
+          drivers: [
+            { name: 'Kamal Gamage', nic: '198075334411', vehicle: 'WP CAD-5643' }
+          ]
+        },
+        {
+          id: 'PR0103',
+          type: 'individual',
+          status: 'checked-in',
+          submittedAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+          photoAllowed: true,
+          members: [
+            { name: 'John Doe', nic: 'N384756', phone: '0770001122', company: 'Sika Chem', purpose: 'Lab Audit', zones: ['Lab', 'Engineering'], hostName: 'Kanishka Silva', isLeader: true }
+          ]
+        }
+      ];
+
+      const DEFAULT_VISITORS = [
+        {
+          id: '10',
+          prId: 'PR0103',
+          name: 'John Doe',
+          nic: 'N384756',
+          phone: '0770001122',
+          company: 'Sika Chem',
+          purpose: 'Lab Audit',
+          hostName: 'Kanishka Silva',
+          hostDesignation: 'Chemist',
+          hostDept: 'R&D Lab',
+          hostPhone: '0711122334',
+          vehicle: 'WP KM-2938',
+          zones: ['Lab', 'Engineering'],
+          color: 'amber',
+          pass: 'A01',
+          isGroup: false,
+          groupCount: 1,
+          groupMembers: [],
+          drivers: [],
+          photoAllowed: true,
+          status: 'in',
+          checkIn: new Date(Date.now() - 3600000).toISOString(),
+          checkOut: null
+        },
+        {
+          id: '9',
+          prId: null,
+          name: 'Ravi Gamage',
+          nic: '199044558833',
+          phone: '0714455667',
+          company: 'Lanka Gas',
+          purpose: 'Maintenance',
+          hostName: 'Pradeep Perera',
+          hostDesignation: 'Lead Engineer',
+          hostDept: 'Management Office',
+          hostPhone: '0722233445',
+          vehicle: 'WP LI-9031',
+          zones: ['Mosaic', 'Engineering'],
+          color: 'red',
+          pass: 'R01',
+          isGroup: false,
+          groupCount: 1,
+          groupMembers: [],
+          drivers: [],
+          photoAllowed: false,
+          status: 'out',
+          checkIn: new Date(Date.now() - 3600000 * 4).toISOString(),
+          checkOut: new Date(Date.now() - 3600000 * 2.5).toISOString()
+        }
+      ];
+
+      // ── NIC Validator helper ──────────────────────────────────────────────────
+      function validateNIC(nic) {
+        const val = (nic || '').trim();
+        if (!val) return { ok: false, msg: 'NIC / Passport number is required.' };
+        if (val.length === 10) {
+          const first9 = val.substring(0, 9);
+          const last = val[9].toUpperCase();
+          if (/^\d{9}$/.test(first9) && (last === 'V' || last === 'X')) {
+            return { ok: true, msg: 'Old NIC format. Valid.' };
+          }
+        }
+        if (val.length === 12 && /^\d{12}$/.test(val)) {
+          return { ok: true, msg: 'New NIC format. Valid.' };
+        }
+        if (val.length >= 6 && val.length <= 15 && /^[a-zA-Z0-9]+$/.test(val)) {
+          return { ok: true, msg: 'Passport format. Valid.' };
+        }
+        return { ok: false, msg: 'Invalid NIC format! Must be 9 numbers + V/X, or 12 numbers, or standard passport code.' };
+      }
+
+      // ── Main Controller Hook (Replaces Firebase Backend with LocalStorage) ─────
+      function App() {
+        const [view, setView] = React.useState('dashboard');
+        
+        // Synced local states
+        const [config, setConfig] = React.useState(() => {
+          const cached = localStorage.getItem('vms_config');
+          return cached ? JSON.parse(cached) : DEFAULT_CONFIG;
+        });
+
+        const [zones, setZones] = React.useState(() => {
+          const cached = localStorage.getItem('vms_zones');
+          return cached ? JSON.parse(cached) : DEFAULT_ZONES;
+        });
+
+        const [hosts, setHosts] = React.useState(() => {
+          const cached = localStorage.getItem('vms_hosts');
+          return cached ? JSON.parse(cached) : DEFAULT_HOSTS;
+        });
+
+        const [preRegs, setPreRegs] = React.useState(() => {
+          const cached = localStorage.getItem('vms_preregs');
+          return cached ? JSON.parse(cached) : DEFAULT_PREREGS;
+        });
+
+        const [visitors, setVisitors] = React.useState(() => {
+          const cached = localStorage.getItem('vms_visitors');
+          return cached ? JSON.parse(cached) : DEFAULT_VISITORS;
+        });
+
+        // Save changed lists to localStorage
+        React.useEffect(() => {
+          localStorage.setItem('vms_config', JSON.stringify(config));
+        }, [config]);
+
+        React.useEffect(() => {
+          localStorage.setItem('vms_zones', JSON.stringify(zones));
+        }, [zones]);
+
+        React.useEffect(() => {
+          localStorage.setItem('vms_hosts', JSON.stringify(hosts));
+        }, [hosts]);
+
+        React.useEffect(() => {
+          localStorage.setItem('vms_preregs', JSON.stringify(preRegs));
+        }, [preRegs]);
+
+        React.useEffect(() => {
+          localStorage.setItem('vms_visitors', JSON.stringify(visitors));
+        }, [visitors]);
+
+        // Screen parameters and state
+        const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+        const [adminUnlocked, setAdminUnlocked] = React.useState(false);
+        const [customAlert, setCustomAlert] = React.useState(null);
+        const [customConfirm, setCustomConfirm] = React.useState(null);
+
+        const showAlert = (message, title = 'Notification') => {
+          setCustomAlert({ message, title });
+        };
+
+        const showConfirm = (message, onConfirm, title = 'Confirmation') => {
+          setCustomConfirm({
+            message,
+            onConfirm: () => {
+              onConfirm();
+              setCustomConfirm(null);
+            },
+            title
+          });
+        };
+
+        // Utility: Compute remaining passive pools
+        const getPassPool = () => {
+          const defaultPools = { G: [], Y: [], A: [], R: [] };
+          const onSitePasses = visitors.filter(v => v.status === 'in').map(v => v.pass);
+          
+          ['G', 'Y', 'A', 'R'].forEach(pfx => {
+            const max = config.passTotals[pfx] || 0;
+            const pool = [];
+            for (let i = 1; i <= max; i++) {
+              const code = pfx + String(i).padStart(2, '0');
+              if (!onSitePasses.includes(code)) {
+                pool.push(code);
+              }
+            }
+            defaultPools[pfx] = pool;
+          });
+          return defaultPools;
+        };
+
+        const getHighestColor = (selectedZ) => {
+          const rank = { green: 1, yellow: 2, amber: 3, red: 4 };
+          let bestColor = 'green';
+          let bestRank = 0;
+          selectedZ.forEach(zname => {
+            const liveZ = zones.find(z => z.name === zname);
+            if (liveZ && rank[liveZ.color] > bestRank) {
+              bestColor = liveZ.color;
+              bestRank = rank[liveZ.color];
+            }
+          });
+          return bestColor;
+        };
+
+        // Web triggers and mutations
+        const handlePreRegSubmit = async (prData) => {
+          const nextPrSeq = config.prSeq;
+          const prId = 'PR' + String(nextPrSeq).padStart(4, '0');
+          const newPr = {
+            ...prData,
+            id: prId,
+            status: 'pending',
+            submittedAt: new Date().toISOString()
+          };
+          setPreRegs(prev => [newPr, ...prev]);
+          setConfig(prev => ({ ...prev, prSeq: nextPrSeq + 1 }));
+          showAlert(`Pre-Registration generated successfully under ID #${prId}.`, 'Registration Success');
+        };
+
+        const handleCancelPreReg = async (id) => {
+          setPreRegs(prev => prev.map(p => p.id === id ? { ...p, status: 'cancelled' } : p));
+          showAlert(`Pre-registration #${id} has been marked as cancelled.`, 'Status');
+        };
+
+        const handleAbsentMember = async (prId, memberNic) => {
+          setPreRegs(prev => prev.map(p => {
+            if (p.id === prId) {
+              return { ...p, members: p.members.filter(m => m.nic.toLowerCase() !== memberNic.toLowerCase()) };
+            }
+            return p;
+          }));
+        };
+
+        const handleCheckinPreReg = async (prId, filteredMembers) => {
+          const pr = preRegs.find(p => p.id === prId);
+          if (!pr) throw new Error('Pre-Registration record not found.');
+          
+          const activeMembers = filteredMembers || pr.members;
+          if (activeMembers.length === 0) throw new Error('No visit active delegation rows.');
+          
+          const leader = activeMembers.find(m => m.isLeader) || activeMembers[0];
+          const color = getHighestColor(leader.zones || []);
+          
+          const pfx = { green: 'G', yellow: 'Y', amber: 'A', red: 'R' }[color];
+          const pool = getPassPool()[pfx] || [];
+          let passCode = '';
+          
+          if (pool.length > 0) {
+            passCode = pool[0];
+          } else {
+            const expandedMax = (config.passTotals[pfx] || 0) + 1;
+            setConfig(prev => ({
+              ...prev,
+              passTotals: { ...prev.passTotals, [pfx]: expandedMax }
+            }));
+            passCode = pfx + String(expandedMax).padStart(2, '0');
+          }
+
+          const targetHost = hosts.find(h => h.name === leader.hostName) || { name: leader.hostName, designation: 'Guest Host', dept: 'N/A', phone: '' };
+          const nextIdSeq = config.idSeq;
+
+          const record = {
+            id: String(nextIdSeq),
+            prId: pr.id,
+            name: leader.name,
+            nic: leader.nic,
+            phone: leader.phone || '',
+            company: leader.company || '',
+            purpose: leader.purpose || '',
+            hostName: targetHost.name,
+            hostDesignation: targetHost.designation,
+            hostDept: targetHost.dept || 'Department',
+            hostPhone: targetHost.phone || '',
+            vehicle: leader.vehicle || '',
+            zones: leader.zones || [],
+            color,
+            pass: passCode,
+            isGroup: pr.type === 'group',
+            groupCount: activeMembers.length,
+            groupMembers: activeMembers.filter(m => !m.isLeader).map(m => ({ name: m.name, nic: m.nic, company: m.company || '' })),
+            drivers: pr.drivers || [],
+            photoAllowed: pr.photoAllowed,
+            status: 'in',
+            checkIn: new Date().toISOString(),
+            checkOut: null
+          };
+
+          setVisitors(prev => [record, ...prev]);
+          setPreRegs(prev => prev.map(p => p.id === pr.id ? { ...p, status: 'checked-in', visitorId: record.id } : p));
+          setConfig(prev => ({ ...prev, idSeq: nextIdSeq + 1 }));
+
+          showAlert(`Successfully checked-in ${record.isGroup ? `Group of ${record.groupCount}` : record.name}. Pass Code Card: ${passCode}`, 'Check-in Action Completed');
+          setView('dashboard');
+          return record;
+        };
+
+        const handleWalkinCheckinSubmit = async (walkinData) => {
+          const color = getHighestColor(walkinData.zones || []);
+          const pfx = { green: 'G', yellow: 'Y', amber: 'A', red: 'R' }[color];
+          const pool = getPassPool()[pfx] || [];
+          let passCode = '';
+          
+          if (pool.length > 0) {
+            passCode = pool[0];
+          } else {
+            const expandedMax = (config.passTotals[pfx] || 0) + 1;
+            setConfig(prev => ({ ...prev, passTotals: { ...prev.passTotals, [pfx]: expandedMax } }));
+            passCode = pfx + String(expandedMax).padStart(2, '0');
+          }
+
+          const targetHost = hosts.find(h => h.name === walkinData.hostName) || { name: walkinData.hostName, designation: 'Guest Host', dept: 'N/A', phone: '' };
+          const nextValSeq = config.idSeq;
+
+          const record = {
+            id: String(nextValSeq),
+            prId: null,
+            name: walkinData.name,
+            nic: walkinData.nic,
+            phone: walkinData.phone || '',
+            company: walkinData.company || '',
+            purpose: walkinData.purpose || '',
+            hostName: targetHost.name,
+            hostDesignation: targetHost.designation,
+            hostDept: targetHost.dept || 'Staff Office',
+            hostPhone: targetHost.phone || '',
+            vehicle: walkinData.vehicle || '',
+            zones: walkinData.zones || [],
+            color,
+            pass: passCode,
+            isGroup: false,
+            groupCount: 1,
+            groupMembers: [],
+            drivers: walkinData.drivers || [],
+            photoAllowed: walkinData.photoAllowed,
+            status: 'in',
+            checkIn: new Date().toISOString(),
+            checkOut: null
+          };
+
+          setVisitors(prev => [record, ...prev]);
+          setConfig(prev => ({ ...prev, idSeq: nextValSeq + 1 }));
+          showAlert(`Walk-in guest "${record.name}" successfully checked in. Pass card allocated: ${passCode}`, 'Welcome to Lanka Tiles');
+          setView('dashboard');
+          return record;
+        };
+
+        const handleCheckout = (id) => {
+          const v = visitors.find(x => x.id === id);
+          if (!v) return;
+          showConfirm(
+            v.isGroup 
+              ? `Checkout full group of ${v.groupCount} delegates from the site? All allocated badges will be returned.` 
+              : `Checkout guest "${v.name}"? This returns pass card "${v.pass}" into the active pool.`,
+            () => {
+              setVisitors(prev => prev.map(x => x.id === id ? { ...x, status: 'out', checkOut: new Date().toISOString() } : x));
+              showAlert(`Successfully checked out ${v.name}.`, 'Departure Complete');
+            }
+          );
+        };
+
+        const handleForceCheckout = async (id) => {
+          setVisitors(prev => prev.map(x => x.id === id ? { ...x, status: 'out', checkOut: new Date().toISOString() } : x));
+        };
+
+        const handleSingleHostAdd = async (h) => {
+          setHosts(prev => {
+            const list = prev.filter(x => x.name.toLowerCase() !== h.name.toLowerCase());
+            return [h, ...list];
+          });
+        };
+
+        const handleHostDelete = async (name) => {
+          setHosts(prev => prev.filter(x => x.name !== name));
+        };
+
+        const handleZoneAdd = async (z) => {
+          setZones(prev => {
+            const list = prev.filter(x => x.name.toLowerCase() !== z.name.toLowerCase());
+            return [z, ...list];
+          });
+        };
+
+        const handleZoneDelete = async (name) => {
+          setZones(prev => prev.filter(x => x.name !== name));
+        };
+
+        const handleVisitorDelete = async (id) => {
+          showConfirm('Permanently delete this check-in log? This destroys historic audit trials.', () => {
+            setVisitors(prev => prev.filter(v => v.id !== id));
+            showAlert('Record has been expunged.');
+          });
+        };
+
+        const handlePreRegDelete = async (id) => {
+          showConfirm(`Permanently delete pre-registration #${id}?`, () => {
+            setPreRegs(prev => prev.filter(p => p.id !== id));
+            showAlert('Record successfully deleted.');
+          });
+        };
+
+        const handleVisitorUpdate = async (id, updates) => {
+          setVisitors(prev => prev.map(v => v.id === id ? { ...v, ...updates } : v));
+        };
+
+        const handleClearAll = async () => {
+          localStorage.clear();
+          setConfig(DEFAULT_CONFIG);
+          setZones(DEFAULT_ZONES);
+          setHosts(DEFAULT_HOSTS);
+          setPreRegs([]);
+          setVisitors([]);
+        };
+
+        const handlePassTotalsUpdate = async (passTotals) => {
+          setConfig(prev => ({ ...prev, passTotals }));
+        };
+
+        const handlePasswordUpdate = async (adminPw) => {
+          setConfig(prev => ({ ...prev, adminPw }));
+        };
+
+        return (
+          <div class="flex flex-col md:flex-row min-h-screen">
+            {/* Sidebar Desktop Structure */}
+            <div class="hidden md:flex flex-col w-64 bg-lt-navy text-white min-h-screen p-5 shadow-lg border-r border-[#1a355f]">
+              <div class="flex flex-col gap-1 mb-8">
+                <div class="flex items-center gap-2">
+                  <div class="w-2.5 h-6 bg-lt-red rounded-xs"></div>
+                  <h1 class="text-lg font-display font-black tracking-wider uppercase">Lanka Tiles</h1>
+                </div>
+                <p class="text-[9.5px] font-mono tracking-widest text-[#a6b8d2] uppercase">Visitor Management System</p>
+                <div class="h-[1px] bg-white/10 mt-3 w-full"></div>
+              </div>
+
+              <nav class="flex flex-col gap-2.5 flex-1">
+                <button
+                  onClick={() => setView('dashboard')}
+                  class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all border border-transparent ${view === 'dashboard' ? 'bg-[#234d8a] text-white shadow-xs font-black' : 'text-slate-300 hover:bg-[#152e55] hover:text-white'}`}
+                >
+                  <SvgIcons.Dashboard /> Dashboard Panel
+                </button>
+                <button
+                  onClick={() => setView('prereg')}
+                  class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all border border-transparent ${view === 'prereg' ? 'bg-[#234d8a] text-white shadow-xs font-black' : 'text-slate-300 hover:bg-[#152e55] hover:text-white'}`}
+                >
+                  <SvgIcons.PreReg /> Pre-registraion
+                </button>
+                <button
+                  onClick={() => setView('checkin')}
+                  class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all border border-transparent ${view === 'checkin' ? 'bg-[#234d8a] text-white shadow-xs font-black' : 'text-slate-300 hover:bg-[#152e55] hover:text-white'}`}
+                >
+                  <SvgIcons.CheckIn /> Check-In Guest
+                </button>
+                <button
+                  onClick={() => setView('log')}
+                  class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all border border-transparent ${view === 'log' ? 'bg-[#234d8a] text-white shadow-xs font-black' : 'text-slate-300 hover:bg-[#152e55] hover:text-white'}`}
+                >
+                  <SvgIcons.VisitorLog /> Daily Log Registry
+                </button>
+                <button
+                  onClick={() => setView('admin')}
+                  class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-bold transition-all border border-transparent ${view === 'admin' ? 'bg-[#234d8a] text-white shadow-xs font-black' : 'text-[#fbcfe8] hover:bg-[#152e55] hover:text-white border-dashed border-white/5'}`}
+                >
+                  <SvgIcons.Admin /> Admin Setup
+                </button>
+              </nav>
+
+              <div class="mt-auto pt-4 border-t border-white/10 flex flex-col gap-1.5 text-[10px] text-[#a6b8d2] font-mono leading-relaxed">
+                <div>🔒 SQLite LocalStore DB</div>
+                <div>⚡ Standard HTML Standalone</div>
+                <div class="text-[9px] text-[#718eb2] hover:underline cursor-pointer select-none" onClick={() => showAlert('This self-contained file is ready to host directly on GitHub, GitLab, or locally. Built for Lanka Tiles PLC.', 'Lanka Tiles Export Info')}>
+                  Lanka Tiles PLC &copy; 2026
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Header Menu Bar */}
+            <div class="md:hidden bg-lt-navy text-white px-4 py-3 flex items-center justify-between shadow-md">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-4.5 bg-lt-red rounded-xs"></div>
+                <div>
+                  <h1 class="text-sm font-display font-black tracking-wider uppercase leading-none">Lanka Tiles</h1>
+                  <span class="text-[8px] font-mono tracking-wider opacity-60">Visitor Management (VMS)</span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                class="p-2 bg-[#234d8a] rounded hover:bg-[#122a52] cursor-pointer"
+              >
+                <svg class="h-4.5 w-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Mobile Drawer Slide Navigation Bar */}
+            {mobileMenuOpen && (
+              <div class="md:hidden bg-[#122a52] text-white border-b border-[#234d8a] p-4 flex flex-col gap-2 shadow-inner">
+                <button
+                  onClick={() => { setView('dashboard'); setMobileMenuOpen(false); }}
+                  class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-slate-100 hover:bg-[#234d8a] rounded"
+                >
+                  <SvgIcons.Dashboard /> Dashboard Panel
+                </button>
+                <button
+                  onClick={() => { setView('prereg'); setMobileMenuOpen(false); }}
+                  class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-slate-100 hover:bg-[#234d8a] rounded"
+                >
+                  <SvgIcons.PreReg /> Pre-register
+                </button>
+                <button
+                  onClick={() => { setView('checkin'); setMobileMenuOpen(false); }}
+                  class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-slate-100 hover:bg-[#234d8a] rounded"
+                >
+                  <SvgIcons.CheckIn /> Check-In Guest
+                </button>
+                <button
+                  onClick={() => { setView('log'); setMobileMenuOpen(false); }}
+                  class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-slate-100 hover:bg-[#234d8a] rounded"
+                >
+                  <SvgIcons.VisitorLog /> Daily Log Registry
+                </button>
+                <button
+                  onClick={() => { setView('admin'); setMobileMenuOpen(false); }}
+                  class="flex items-center gap-3 px-2 py-2 text-xs font-bold text-pink-200 hover:bg-[#234d8a] rounded"
+                >
+                  <SvgIcons.Admin /> Admin Setup
+                </button>
+              </div>
+            )}
+
+            {/* Main Layout Area */}
+            <main class="flex-1 p-4 md:p-8 space-y-6">
+              {view === 'dashboard' && (
+                <DashboardView 
+                  visitors={visitors} 
+                  preRegs={preRegs} 
+                  config={config} 
+                  getPassPool={getPassPool} 
+                  onCheckout={handleCheckout} 
+                />
+              )}
+              {view === 'prereg' && (
+                <PreRegistrationView 
+                  preRegs={preRegs} 
+                  hosts={hosts} 
+                  zones={zones} 
+                  onSubmitPreReg={handlePreRegSubmit} 
+                  onCancelPreReg={handleCancelPreReg} 
+                  showAlert={showAlert} 
+                  showConfirm={showConfirm} 
+                />
+              )}
+              {view === 'checkin' && (
+                <CheckInView 
+                  preRegs={preRegs} 
+                  visitors={visitors} 
+                  hosts={hosts} 
+                  zones={zones} 
+                  getPassPool={getPassPool} 
+                  onCheckinPreReg={handleCheckinPreReg} 
+                  onWalkinCheckin={handleWalkinCheckinSubmit} 
+                  onGrdRemoveMember={handleAbsentMember} 
+                  showAlert={showAlert} 
+                  showConfirm={showConfirm} 
+                />
+              )}
+              {view === 'log' && (
+                <VisitorLogView 
+                  visitors={visitors} 
+                  onVisitorDelete={handleVisitorDelete} 
+                  onCheckout={handleCheckout} 
+                />
+              )}
+              {view === 'admin' && (
+                <AdminView 
+                  hosts={hosts} 
+                  zones={zones} 
+                  visitors={visitors} 
+                  preRegs={preRegs} 
+                  onVisitorDelete={handleVisitorDelete} 
+                  onVisitorUpdate={handleVisitorUpdate} 
+                  onPreRegDelete={handlePreRegDelete} 
+                  onSingleHostAdd={handleSingleHostAdd} 
+                  onHostDelete={handleHostDelete} 
+                  onZoneAdd={handleZoneAdd} 
+                  onZoneDelete={handleZoneDelete} 
+                  onForceCheckout={handleForceCheckout} 
+                  onClearAll={handleClearAll} 
+                  onPassTotalsUpdate={handlePassTotalsUpdate} 
+                  onPasswordUpdate={handlePasswordUpdate} 
+                  projectId="Lanka Tiles Web Standalone" 
+                  adminPw={config.adminPw} 
+                  showAlert={showAlert} 
+                  showConfirm={showConfirm} 
+                />
+              )}
+            </main>
+
+            {/* Custom Alert Overlay Modal */}
+            {customAlert && (
+              <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs text-slate-800">
+                <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden border-t-4 border-lt-navy">
+                  <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <span class="font-display font-black text-[11px] text-lt-navy uppercase tracking-wider">{customAlert.title}</span>
+                    <button onClick={() => setCustomAlert(null)} class="text-slate-400 hover:text-slate-700 font-bold text-lg cursor-pointer">&times;</button>
+                  </div>
+                  <div class="p-5 text-[12.5px] font-semibold text-slate-700 leading-relaxed">
+                    {customAlert.message}
+                  </div>
+                  <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 text-right">
+                    <button onClick={() => setCustomAlert(null)} class="btn btn-primary btn-xs select-none px-6 py-1.5 rounded">OK</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Custom Confirm Overlay Modal */}
+            {customConfirm && (
+              <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs text-slate-800">
+                <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden border-t-4 border-lt-red">
+                  <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <span class="font-display font-black text-[11px] text-lt-navy uppercase tracking-wider">{customConfirm.title}</span>
+                    <button onClick={() => setCustomConfirm(null)} class="text-slate-400 hover:text-slate-700 font-bold text-lg cursor-pointer">&times;</button>
+                  </div>
+                  <div class="p-5 text-[12.5px] font-semibold text-slate-700 leading-relaxed">
+                    {customConfirm.message}
+                  </div>
+                  <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 text-right space-x-2">
+                    <button onClick={() => setCustomConfirm(null)} class="btn btn-ghost btn-xs text-xs font-bold px-4 py-1.5 rounded cursor-pointer">Cancel</button>
+                    <button 
+                      onClick={() => customConfirm.onConfirm()} 
+                      class="btn btn-danger btn-xs text-xs text-white font-black px-5 py-1.5 rounded cursor-pointer select-none"
+                    >
+                      Yes, Proceed
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      // ── Dashboard View Subcomponent ───────────────────────────────────────────
+      function DashboardView({ visitors, preRegs, config, getPassPool, onCheckout }) {
+        const onSiteCount = visitors.filter(v => v.status === 'in').length;
+        const outCount = visitors.filter(v => v.status === 'out').length;
+        const totalCheckedInToday = visitors.length;
+        const pendingPreRegCount = preRegs.filter(p => p.status === 'pending').length;
+
+        const onSiteGuests = visitors.filter(v => v.status === 'in');
+
+        const activeBadgeTotals = { green: 0, yellow: 0, amber: 0, red: 0 };
+        onSiteGuests.forEach(v => {
+          if (activeBadgeTotals[v.color] !== undefined) activeBadgeTotals[v.color]++;
+        });
+
+        const pool = getPassPool();
+
+        return (
+          <div class="space-y-6">
+            <div class="flex flex-col gap-1">
+              <h2 class="text-2xl font-display font-black text-lt-navy uppercase tracking-tight">Main Dashboard</h2>
+              <p class="text-xs text-lt-muted font-medium">Real-time statistics of delegates, active pass allocations, and checkout registers.</p>
+            </div>
+
+            {/* Quick Metrics Cards */}
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white p-4.5 rounded-xl border border-lt-border shadow-3xs">
+                <span class="text-[9.5px] uppercase font-bold text-slate-400 tracking-wider font-display">On Site Guests</span>
+                <div class="flex items-baseline gap-2 mt-1">
+                  <span class="text-2xl font-display font-black text-lt-navy">{onSiteCount}</span>
+                  <span class="text-[10px] font-bold text-emerald-600 animate-pulse-slow">● Active</span>
+                </div>
+              </div>
+              <div class="bg-white p-4.5 rounded-xl border border-lt-border shadow-3xs">
+                <span class="text-[9.5px] uppercase font-bold text-slate-400 tracking-wider font-display">Expected Guests</span>
+                <div class="flex items-baseline gap-2 mt-1">
+                  <span class="text-2xl font-display font-black text-lt-navy">{pendingPreRegCount}</span>
+                  <span class="text-[10px] font-bold text-lt-muted font-semibold">Pre-registered</span>
+                </div>
+              </div>
+              <div class="bg-white p-4.5 rounded-xl border border-lt-border shadow-3xs">
+                <span class="text-[9.5px] uppercase font-bold text-slate-400 tracking-wider font-display">Total Completed Checks</span>
+                <div class="flex items-baseline gap-2 mt-1">
+                  <span class="text-2xl font-display font-black text-lt-navy">{outCount}</span>
+                  <span class="text-[10px] font-bold text-slate-500 font-semibold">Exited</span>
+                </div>
+              </div>
+              <div class="bg-white p-4.5 rounded-xl border border-lt-border shadow-3xs">
+                <span class="text-[9.5px] uppercase font-bold text-slate-400 tracking-wider font-display">Pass Limit Pool</span>
+                <div class="flex items-baseline gap-1.5 mt-1 text-[11px] font-mono font-bold text-[#1e293b]">
+                  <span class="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-250">G:{pool.G.length}</span>
+                  <span class="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-250">Y:{pool.Y.length}</span>
+                  <span class="bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded border border-orange-250">A:{pool.A.length}</span>
+                  <span class="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded border border-rose-250">R:{pool.R.length}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Area: On Site Guests Table with Checkout Option */}
+            <div class="bg-white border border-lt-border rounded-xl shadow-3xs overflow-hidden">
+              <div class="bg-gray-50 border-b border-lt-border px-5 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-4 bg-lt-navy rounded-2xs"></span>
+                  <h3 class="font-display font-black text-xs text-lt-navy uppercase tracking-wider">Active Guest On-Site Directory ({onSiteCount})</h3>
+                </div>
+                <span class="text-[10.5px] font-bold text-lt-muted font-mono">Requires Quick Badging Return</span>
+              </div>
+              
+              {onSiteGuests.length === 0 ? (
+                <div class="text-center py-12 px-4 space-y-2">
+                  <div class="text-slate-300 flex justify-center">
+                    <svg class="h-10 w-10 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <h4 class="text-xs font-bold text-slate-700 uppercase">Clear Yard Security State</h4>
+                  <p class="text-xs text-slate-400 max-w-sm mx-auto">No visitors are currently registered on-site in any manufacturing plants. Use Check-In or Pre-registration.</p>
+                </div>
+              ) : (
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse text-[11.5px]">
+                    <thead>
+                      <tr class="bg-slate-50 border-b border-lt-border text-[10px] text-slate-400 font-bold uppercase select-none">
+                        <th class="py-3 px-4">Visitor/Team Leader</th>
+                        <th class="py-3 px-4">Pass Card ID</th>
+                        <th class="py-3 px-4">NIC/Passport</th>
+                        <th class="py-3 px-4">Host Employee</th>
+                        <th class="py-3 px-4">Vehicle Plates</th>
+                        <th class="py-3 px-4">Arrived At</th>
+                        <th class="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-semibold text-slate-705">
+                      {onSiteGuests.map(v => {
+                        const styleMap = {
+                          green: 'bg-emerald-500 text-white',
+                          yellow: 'bg-amber-500 text-white',
+                          amber: 'bg-orange-500 text-white',
+                          red: 'bg-rose-500 text-white'
+                        };
+                        return (
+                          <tr key={v.id} class="hover:bg-slate-50/70 transition-colors">
+                            <td class="py-3 px-4">
+                              <div class="flex flex-col font-black text-slate-800">
+                                <span>{v.name}</span>
+                                <span class="text-[9.5px] font-bold text-slate-400">{v.company || 'Private Guest'} {v.isGroup ? `(Group of ${v.groupCount})` : ''}</span>
+                              </div>
+                            </td>
+                            <td class="py-3 px-4">
+                              <span class={`px-2.5 py-0.5 rounded-full text-[9px] font-mono font-black ${styleMap[v.color]}`}>
+                                {v.pass}
+                              </span>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-xs">{v.nic}</td>
+                            <td class="py-3 px-4 flex flex-col">
+                              <span class="font-black text-slate-700">{v.hostName}</span>
+                              <span class="text-[9.5px] font-bold text-slate-400">{v.hostDept} — {v.hostDesignation}</span>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-slate-500">{v.vehicle || 'None'}</td>
+                            <td class="py-3 px-4 text-slate-500 text-[11px]">{new Date(v.checkIn).toLocaleTimeString()}</td>
+                            <td class="py-3 px-4 text-right">
+                              <button
+                                onClick={() => onCheckout(v.id)}
+                                class="btn btn-danger btn-xs cursor-pointer select-none border-b shadow-3xs"
+                              >
+                                Checkout Departure ↩
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      // ── Pre-Registration View Subcomponent ────────────────────────────────────
+      function PreRegistrationView({ preRegs, hosts, zones, onSubmitPreReg, onCancelPreReg, showAlert, showConfirm }) {
+        const [formStep, setFormStep] = React.useState(1);
+        const [prType, setPrType] = React.useState('individual');
+        const [name, setName] = React.useState('');
+        const [nic, setNic] = React.useState('');
+        const [phone, setPhone] = React.useState('');
+        const [company, setCompany] = React.useState('');
+        const [hostName, setHostName] = React.useState('');
+        const [purpose, setPurpose] = React.useState('');
+        const [vehicle, setVehicle] = React.useState('');
+        const [photoAllowed, setPhotoAllowed] = React.useState(null);
+        const [selectedZones, setSelectedZones] = React.useState([]);
+        
+        // Group & driver rows
+        const [groupRows, setGroupRows] = React.useState([]);
+        const [drivers, setDrivers] = React.useState([]);
+        const [nicHint, setNicHint] = React.useState('');
+        const [isSubmitting, setIsSubmitting] = React.useState(false);
+        const [searchQuery, setSearchQuery] = React.useState('');
+
+        const handleNicChange = (val) => {
+          setNic(val);
+          if (val.trim()) {
+            const check = validateNIC(val);
+            setNicHint(check.msg);
+          } else {
+            setNicHint('');
+          }
+        };
+
+        const toggleZone = (zname) => {
+          setSelectedZones(prev => 
+            prev.includes(zname) ? prev.filter(z => z !== zname) : [...prev, zname]
+          );
+        };
+
+        const handleAddGroupRow = () => {
+          setGroupRows(prev => [...prev, { name: '', nic: '' }]);
+        };
+
+        const handleRemoveGroupRow = (idx) => {
+          setGroupRows(prev => prev.filter((_, i) => i !== idx));
+        };
+
+        const handleGroupRowChange = (idx, field, val) => {
+          setGroupRows(prev => prev.map((row, i) => i === idx ? { ...row, [field]: val } : row));
+        };
+
+        const handleAddDriver = () => {
+          setDrivers(prev => [...prev, { name: '', nic: '', vehicle: '' }]);
+        };
+
+        const handleRemoveDriver = (idx) => {
+          setDrivers(prev => prev.filter((_, i) => i !== idx));
+        };
+
+        const handleDriverChange = (idx, field, val) => {
+          setDrivers(prev => prev.map((drv, i) => i === idx ? { ...drv, [field]: val } : drv));
+        };
+
+        // Form page checks
+        const validateMobileStep1 = () => {
+          if (!name.trim()) { showAlert('Visitor Leader name is required.', 'Blank Field'); return false; }
+          const check = validateNIC(nic);
+          if (!check.ok) { showAlert(check.msg, 'Validation Alert'); return false; }
+          if (!phone.trim()) { showAlert('Contact phone number required.', 'Blank Field'); return false; }
+          return true;
+        };
+
+        const validateMobileStep2 = () => {
+          if (!hostName) { showAlert('Please select an employee host.', 'Host Required'); return false; }
+          if (!purpose.trim()) { showAlert('Purpose of visit is required.', 'Purpose Required'); return false; }
+          if (photoAllowed === null) { showAlert('Photography permission is mandatory.', 'Permission Required'); return false; }
+          return true;
+        };
+
+        const handleSubmit = async (e) => {
+          if (e) e.preventDefault();
+          if (!name.trim() || !nic.trim() || !phone.trim() || !hostName || !purpose.trim() || photoAllowed === null || selectedZones.length === 0) {
+            showAlert('Please complete all mandatory fields flagged with * including Access Zones.', 'Validation Error');
+            return;
+          }
+
+          setIsSubmitting(true);
+          try {
+            const membersList = [
+              {
+                name,
+                nic,
+                phone,
+                company,
+                purpose,
+                vehicle,
+                zones: selectedZones,
+                hostName,
+                isLeader: true
+              }
+            ];
+
+            if (prType === 'group') {
+              for (const row of groupRows) {
+                if (!row.name.trim() || !row.nic.trim()) {
+                  throw new Error('All delegation group rows require a Name and valid NIC.');
+                }
+                membersList.push({
+                  name: row.name,
+                  nic: row.nic,
+                  company,
+                  purpose,
+                  zones: selectedZones,
+                  hostName,
+                  isLeader: false
+                });
+              }
+            }
+
+            await onSubmitPreReg({
+              type: prType,
+              status: 'pending',
+              photoAllowed,
+              members: membersList,
+              drivers: drivers
+            });
+
+            // reset state
+            setName('');
+            setNic('');
+            setPhone('');
+            setCompany('');
+            setHostName('');
+            setPurpose('');
+            setVehicle('');
+            setPhotoAllowed(null);
+            setSelectedZones([]);
+            setGroupRows([]);
+            setDrivers([]);
+            setFormStep(1);
+          } catch (err) {
+            showAlert(err.message, 'Form Submission Failed');
+          } finally {
+            setIsSubmitting(false);
+          }
+        };
+
+        const filteredPrs = preRegs.filter(p => {
+          const leader = p.members.find(m => m.isLeader) || p.members[0];
+          return (
+            p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            leader.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            leader.nic.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        });
+
+        return (
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Form Column */}
+            <div class="lg:col-span-8 bg-white border border-lt-border rounded-xl shadow-3xs overflow-hidden">
+              <div class="bg-gray-50 border-b border-lt-border px-5 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-4 bg-lt-red rounded-2xs"></span>
+                  <h3 class="font-display font-black text-xs text-lt-navy uppercase tracking-wider">Generate Guest Pre-Registration</h3>
+                </div>
+                <span class="text-[10px] font-black text-lt-red font-mono bg-lt-red-lt rounded-full px-2.5 py-0.5 border border-lt-red-bd">Lanka Tiles Plant Authorization</span>
+              </div>
+
+              {/* Responsive Wizard Step Tracking Form (Excellent for Mobile) */}
+              <div class="p-5 space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2 font-display text-[10.5px] font-bold uppercase text-slate-800">
+                  <span>Navigation steps</span>
+                  <span class="bg-lt-navy text-white px-2.5 py-0.5 rounded-full text-[9.5px]">Step {formStep} of 3</span>
+                </div>
+                <div class="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
+                  <div class="bg-lt-red h-full transition-all duration-300" style={{ width: `${(formStep / 3) * 100}%` }} />
+                </div>
+
+                {/* Step 1: Guest Identity */}
+                {formStep === 1 && (
+                  <div class="space-y-4">
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg flex flex-col gap-1">
+                      <span class="text-[9px] uppercase font-black text-slate-500 tracking-wider">Visitor Classification</span>
+                      <div class="grid grid-cols-2 gap-2 mt-1">
+                        <button type="button" onClick={() => setPrType('individual')} class={`py-2 px-3 text-xs font-bold rounded border cursor-pointer ${prType === 'individual' ? 'bg-lt-navy text-white border-lt-navy font-black shadow-3xs' : 'bg-white text-slate-705 border-slate-2a0 hover:bg-slate-50'}`}>
+                          👤 Individual Pass
+                        </button>
+                        <button type="button" onClick={() => setPrType('group')} class={`py-2 px-3 text-xs font-bold rounded border cursor-pointer ${prType === 'group' ? 'bg-lt-navy text-white border-lt-navy font-black shadow-3xs' : 'bg-white text-slate-705 border-slate-2a0 hover:bg-slate-50'}`}>
+                          👥 Delegation Group
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Visitor / Leader Name <span class="text-lt-red">*</span></label>
+                        <input type="text" value={name} onChange={e => setName(e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))} class="inp w-full" placeholder="Rohan Karunaratne" />
+                      </div>
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">NIC / Passport Number <span class="text-lt-red">*</span></label>
+                        <input type="text" value={nic} onChange={e => handleNicChange(e.target.value)} class="inp w-full" placeholder="199203112244 or N0129382" />
+                        {nicHint && <span class="text-[10px] font-bold text-slate-400 mt-0.5 font-mono">{nicHint}</span>}
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Contact Phone No. <span class="text-lt-red">*</span></label>
+                        <input type="tel" value={phone} onChange={e => setPhone(e.target.value.replace(/\D/g, ''))} class="inp w-full" placeholder="0777123456" />
+                      </div>
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Company / Organization <span class="text-slate-400 font-semibold">(Optional)</span></label>
+                        <input type="text" value={company} onChange={e => setCompany(e.target.value)} class="inp w-full" placeholder="Hayleys Fabric" />
+                      </div>
+                    </div>
+
+                    <div class="pt-2">
+                      <button type="button" onClick={() => { if (validateMobileStep1()) setFormStep(2); }} class="w-full btn btn-primary py-2.5 justify-center">
+                        Continue to Visit Details &rarr;
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 2: Host & Target Details */}
+                {formStep === 2 && (
+                  <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Host Employee <span class="text-lt-red">*</span></label>
+                        <select value={hostName} onChange={e => setHostName(e.target.value)} class="inp w-full bg-white text-slate-800">
+                          <option value="">Select Host…</option>
+                          {hosts.map(h => (
+                            <option key={h.name} value={h.name}>{h.name} — {h.designation} {h.dept ? `(${h.dept})` : ''}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Purpose of Visit <span class="text-lt-red">*</span></label>
+                        <input type="text" value={purpose} onChange={e => setPurpose(e.target.value)} class="inp w-full" placeholder="Machinery Supplier Audit" />
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Vehicle Plate Number <span class="text-slate-400 font-semibold">(Optional)</span></label>
+                        <input type="text" value={vehicle} onChange={e => setVehicle(e.target.value)} class="inp w-full" placeholder="WP CAS-4829" />
+                      </div>
+                      <div class="flex flex-col gap-1 bg-rose-50/10 p-3 border border-slate-100 rounded-lg">
+                        <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Photography Permission <span class="text-lt-red">*</span></label>
+                        <div class="grid grid-cols-2 gap-2 mt-1">
+                          <button type="button" onClick={() => setPhotoAllowed(true)} class={`py-1.5 px-3 text-xs font-bold rounded border cursor-pointer select-none transition-all ${photoAllowed === true ? 'bg-emerald-600 text-white border-emerald-600 font-black shadow-xs' : 'bg-white text-slate-705 border-slate-200 hover:bg-slate-50'}`}>
+                            Allow ✅
+                          </button>
+                          <button type="button" onClick={() => setPhotoAllowed(false)} class={`py-1.5 px-3 text-xs font-bold rounded border cursor-pointer select-none transition-all ${photoAllowed === false ? 'bg-rose-600 text-white border-rose-600 font-black shadow-xs' : 'bg-white text-slate-705 border-slate-200 hover:bg-slate-50'}`}>
+                            Prohibit ❌
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                      <button type="button" onClick={() => setFormStep(1)} class="btn btn-ghost py-2.5 justify-center">
+                        &larr; Back
+                      </button>
+                      <button type="button" onClick={() => { if (validateMobileStep2()) setFormStep(3); }} class="btn btn-primary py-2.5 justify-center">
+                        Clearance Zones &rarr;
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Zones and Sub-delegates registration */}
+                {formStep === 3 && (
+                  <div class="space-y-4">
+                    <div class="flex flex-col gap-1.5">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Authorised Access Zones <span class="text-lt-red">*</span></label>
+                      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                        {zones.map(z => {
+                          const isSelected = selectedZones.includes(z.name);
+                          const activeColors = {
+                            green: 'bg-emerald-500 border-emerald-600 text-white',
+                            yellow: 'bg-amber-500 border-amber-600 text-white',
+                            amber: 'bg-orange-500 border-orange-600 text-white',
+                            red: 'bg-rose-500 border-rose-600 text-white'
+                          };
+                          const normalColors = {
+                            green: 'bg-emerald-50 border-emerald-55 text-emerald-700',
+                            yellow: 'bg-amber-50 border-amber-55 text-amber-700',
+                            amber: 'bg-orange-50 border-orange-55 text-orange-700',
+                            red: 'bg-rose-50 border-rose-55 text-rose-700'
+                          };
+                          return (
+                            <button
+                              key={z.name}
+                              type="button"
+                              onClick={() => toggleZone(z.name)}
+                              class={`px-2.5 py-1.5 text-[10px] rounded-lg border font-black text-center cursor-pointer transition-all ${isSelected ? activeColors[z.color] : normalColors[z.color]} hover:bg-slate-100/50`}
+                            >
+                              {z.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Group rows layout */}
+                    {prType === 'group' && (
+                      <div class="border border-lt-border rounded-xl p-3 bg-slate-50 space-y-2">
+                        <div class="flex items-center justify-between border-b pb-1">
+                          <span class="text-[9.5px] font-black text-lt-navy uppercase tracking-wider">Group Delegate Lists</span>
+                          <button type="button" onClick={handleAddGroupRow} class="text-[9px] font-black border border-lt-navy/20 bg-white hover:bg-slate-50 text-lt-navy px-2 py-0.5 rounded">
+                            + Add Member
+                          </button>
+                        </div>
+                        {groupRows.length === 0 ? (
+                          <div class="text-center py-4 text-[10.5px] text-slate-400 italic">No supplemental group rows added. Tap above.</div>
+                        ) : (
+                          <div class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                            {groupRows.map((row, idx) => (
+                              <div key={idx} class="bg-white border rounded p-2.5 flex flex-col md:flex-row gap-2 relative shadow-3xs">
+                                <span class="bg-slate-100 text-slate-800 text-[8.5px] font-bold px-1.5 py-0.5 rounded h-4 w-12 text-center absolute right-3 md:static md:w-auto">#{idx+1}</span>
+                                <input type="text" class="inp flex-1 h-8" placeholder="Member Name *" value={row.name} onChange={e => handleGroupRowChange(idx, 'name', e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))} />
+                                <input type="text" class="inp flex-1 h-8" placeholder="NIC / Passport *" value={row.nic} onChange={e => handleGroupRowChange(idx, 'nic', e.target.value)} />
+                                <button type="button" onClick={() => handleRemoveGroupRow(idx)} class="text-xs font-black text-lt-red hover:underline h-8 px-2">Cancel</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Drivers column */}
+                    <div class="border border-lt-red-bd/20 rounded-xl p-3 bg-rose-50/10 space-y-2">
+                      <div class="flex items-center justify-between border-b border-rose-100 pb-1">
+                        <span class="text-[9.5px] font-black text-lt-red uppercase tracking-wider">Add Accompanying Drivers</span>
+                        <button type="button" onClick={handleAddDriver} class="text-[9px] font-black border border-lt-red-bd bg-white hover:bg-rose-50 text-lt-red px-2 py-0.5 rounded">
+                          + Add Driver
+                        </button>
+                      </div>
+                      {drivers.length === 0 ? (
+                        <div class="text-[10.5px] text-slate-400 italic">No specific fleet drivers registered for this visitor request.</div>
+                      ) : (
+                        <div class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                          {drivers.map((drv, idx) => (
+                            <div key={idx} class="bg-white border rounded p-2.5 space-y-1.5 relative shadow-3xs">
+                              <div class="flex justify-between items-center pb-0.5 border-b border-slate-50">
+                                <span class="text-[8.5px] font-bold text-lt-red">Accompanying Driver #{idx+1}</span>
+                                <button type="button" onClick={() => handleRemoveDriver(idx)} class="text-[10px] text-lt-red hover:underline">Remove</button>
+                              </div>
+                              <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <input type="text" class="inp h-8" placeholder="Driver Name *" value={drv.name} onChange={e => handleDriverChange(idx, 'name', e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))} />
+                                <input type="text" class="inp h-8" placeholder="Driver NIC *" value={drv.nic} onChange={e => handleDriverChange(idx, 'nic', e.target.value)} />
+                                <input type="text" class="inp h-8" placeholder="Driver Vehicle No" value={drv.vehicle} onChange={e => handleDriverChange(idx, 'vehicle', e.target.value)} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                      <button type="button" onClick={() => setFormStep(2)} class="btn btn-ghost py-2.5 justify-center">
+                        &larr; Back
+                      </button>
+                      <button type="button" onClick={handleSubmit} disabled={isSubmitting} class="btn btn-primary bg-lt-navy text-white hover:bg-lt-navy-dk py-2.5 justify-center">
+                        {isSubmitting ? 'Registering...' : 'Submit Authorization Record ✓'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* List Column */}
+            <div class="lg:col-span-4 bg-white border border-lt-border rounded-xl shadow-3xs overflow-hidden">
+              <div class="bg-gray-50 border-b border-lt-border px-4 py-3 flex items-center justify-between">
+                <span class="font-display font-black text-2xs text-lt-navy uppercase tracking-wider">Search Active Pre-Registrations</span>
+                <span class="text-[9px] font-black text-slate-400 font-mono">Archive Logs</span>
+              </div>
+              <div class="p-3 bg-slate-50 border-b border-lt-border">
+                <input
+                  type="text"
+                  placeholder="Filter name, NIC, PR..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  class="inp w-full text-xs"
+                />
+              </div>
+
+              <div class="divide-y divide-slate-100 max-h-[480px] overflow-y-auto">
+                {filteredPrs.length === 0 ? (
+                  <div class="text-center py-8 text-xs text-slate-400 italic">No preregistre matching your search patterns.</div>
+                ) : (
+                  filteredPrs.map(pr => {
+                    const ldr = pr.members.find(m => m.isLeader) || pr.members[0];
+                    const statusColors = {
+                      pending: 'bg-amber-100 text-amber-800 border-amber-200',
+                      'checked-in': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                      cancelled: 'bg-slate-100 text-slate-500 border-slate-200'
+                    };
+                    return (
+                      <div key={pr.id} class="p-3.5 hover:bg-slate-50 transition-colors flex flex-col gap-1 text-xs text-slate-700">
+                        <div class="flex items-center justify-between">
+                          <span class="font-mono font-black text-lt-navy">{pr.id}</span>
+                          <span class={`text-[8.5px] uppercase font-black px-2 py-0.5 rounded-full border ${statusColors[pr.status]}`}>{pr.status}</span>
+                        </div>
+                        <div class="font-bold text-slate-800 text-[12.5px] font-display flex items-center gap-1">
+                          {ldr.name} 
+                          {pr.type === 'group' && <span class="bg-slate-100 text-slate-600 px-1 rounded text-[9.5px]">+{pr.members.length - 1} group</span>}
+                        </div>
+                        <div class="flex justify-between items-center text-[10.5px] text-slate-400 font-medium">
+                          <span>NIC: {ldr.nic}</span>
+                          <span>Host: {ldr.hostName}</span>
+                        </div>
+                        {pr.status === 'pending' && (
+                          <div class="flex gap-2 justify-end mt-1.5 border-t border-dashed border-slate-100 pt-2">
+                            <button
+                              onClick={() => showConfirm(`Mark Pre-Registration #${pr.id} as cancelled?`, () => onCancelPreReg(pr.id))}
+                              class="text-[10px] font-black text-lt-red hover:underline cursor-pointer"
+                            >
+                              Cancel Pass
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ── Check-In View Subcomponent ────────────────────────────────────────────
+      function CheckInView({ preRegs, visitors, hosts, zones, getPassPool, onCheckinPreReg, onWalkinCheckin, onGrdRemoveMember, showAlert, showConfirm }) {
+        const [searchNic, setSearchNic] = React.useState('');
+        const [matchedPr, setMatchedPr] = React.useState(null);
+        const [absentNics, setAbsentNics] = React.useState([]);
+
+        // Walk-In attributes
+        const [wiName, setWiName] = React.useState('');
+        const [wiNic, setWiNic] = React.useState('');
+        const [wiPhone, setWiPhone] = React.useState('');
+        const [wiCompany, setWiCompany] = React.useState('');
+        const [wiHost, setWiHost] = React.useState('');
+        const [wiPurpose, setWiPurpose] = React.useState('');
+        const [wiVehicle, setWiVehicle] = React.useState('');
+        const [wiPhotoAllowed, setWiPhotoAllowed] = React.useState(null);
+        const [wiSelectedZones, setWiSelectedZones] = React.useState([]);
+        const [wiDrivers, setWiDrivers] = React.useState([]);
+
+        const [nicHint, setNicHint] = React.useState('');
+        const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+        const handleSearchLookup = (e) => {
+          if (e) e.preventDefault();
+          if (!searchNic.trim()) return showAlert('Enter registered NIC or Passport code.', 'Action Required');
+          const pr = preRegs.find(p => p.status === 'pending' && p.members.some(m => m.nic.toLowerCase() === searchNic.toLowerCase().trim()));
+          if (!pr) {
+            showAlert('No pending pre-registration matches that NIC. Go to walk-in check in register.', 'Lookup Failed');
+            setMatchedPr(null);
+          } else {
+            setMatchedPr(pr);
+            setAbsentNics([]);
+          }
+        };
+
+        const handleCheckinPreRegAction = async () => {
+          if (!matchedPr) return;
+          setIsSubmitting(true);
+          try {
+            const filtered = matchedPr.members.filter(m => !absentNics.includes(m.nic));
+            await onCheckinPreReg(matchedPr.id, filtered);
+            setMatchedPr(null);
+            setSearchNic('');
+          } catch (err) {
+            showAlert(err.message);
+          } finally {
+            setIsSubmitting(false);
+          }
+        };
+
+        const toggleAbsent = (nicCode) => {
+          setAbsentNics(prev => 
+            prev.includes(nicCode) ? prev.filter(n => n !== nicCode) : [...prev, nicCode]
+          );
+        };
+
+        const toggleWiZone = (zname) => {
+          setWiSelectedZones(prev => 
+            prev.includes(zname) ? prev.filter(z => z !== zname) : [...prev, zname]
+          );
+        };
+
+        const handleWiNicChange = (val) => {
+          setWiNic(val);
+          if (val.trim()) {
+            const check = validateNIC(val);
+            setNicHint(check.msg);
+          } else {
+            setNicHint('');
+          }
+        };
+
+        const handleWiSubmit = async (e) => {
+          if (e) e.preventDefault();
+          if (!wiName.trim() || !wiNic.trim() || !wiPhone.trim() || !wiHost || !wiPurpose.trim() || wiPhotoAllowed === null || wiSelectedZones.length === 0) {
+            showAlert('Please complete all mandatory * fields inside the form first.', 'Fields Guard');
+            return;
+          }
+
+          setIsSubmitting(true);
+          try {
+            await onWalkinCheckin({
+              name: wiName,
+              nic: wiNic,
+              phone: wiPhone,
+              company: wiCompany,
+              hostName: wiHost,
+              purpose: wiPurpose,
+              vehicle: wiVehicle,
+              photoAllowed: wiPhotoAllowed,
+              zones: wiSelectedZones,
+              drivers: wiDrivers
+            });
+
+            // clear states
+            setWiName('');
+            setWiNic('');
+            setWiPhone('');
+            setWiCompany('');
+            setWiHost('');
+            setWiPurpose('');
+            setWiVehicle('');
+            setWiPhotoAllowed(null);
+            setWiSelectedZones([]);
+            setWiDrivers([]);
+          } catch (err) {
+            showAlert(err.message);
+          } finally {
+            setIsSubmitting(false);
+          }
+        };
+
+        return (
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {/* Left Column: Pre-Reg Code lookup checks */}
+              <div class="bg-white border border-lt-border rounded-xl shadow-3xs overflow-hidden">
+                <div class="bg-gray-50 border-b border-lt-border px-5 py-4 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-4 bg-lt-navy rounded-2xs"></span>
+                    <h3 class="font-display font-black text-xs text-lt-navy uppercase tracking-wider">Fast Lane Pre-Registration Lookup</h3>
+                  </div>
+                  <span class="text-[9.5px] font-black text-slate-500 font-mono">NIC Check-In</span>
+                </div>
+
+                <div class="p-5 space-y-4">
+                  <form onSubmit={handleSearchLookup} class="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Enter visitor leader identity NIC/Passport" 
+                      value={searchNic}
+                      onChange={e => setSearchNic(e.target.value)}
+                      class="inp flex-1 h-10 text-xs"
+                    />
+                    <button type="submit" class="btn btn-primary h-10 px-4">
+                      Search Directory
+                    </button>
+                  </form>
+
+                  {matchedPr ? (
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3 font-semibold text-slate-700 text-xs">
+                      <div class="flex justify-between items-center border-b pb-2">
+                        <span class="font-mono text-lt-navy font-black text-sm">Matched Record ID: {matchedPr.id}</span>
+                        <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-black uppercase text-[8.5px]">Authorized Pre-Reg</span>
+                      </div>
+
+                      {/* Members lists with absent sliders */}
+                      <div class="space-y-2">
+                        <span class="text-[9.5px] uppercase font-black text-slate-500 tracking-wider">Mark Group Members Absence if applicable</span>
+                        {matchedPr.members.map((mbr, idx) => (
+                          <div key={idx} class="bg-white border rounded p-2.5 flex items-center justify-between shadow-3xs">
+                            <div class="flex flex-col">
+                              <span class="font-black text-slate-800 text-[12.5px] font-display">{mbr.name} {mbr.isLeader ? '👑 Team Leader' : ''}</span>
+                              <span class="font-mono text-[10.5px] text-slate-400">NIC: {mbr.nic}</span>
+                            </div>
+                            {!mbr.isLeader && (
+                              <button
+                                type="button"
+                                onClick={() => toggleAbsent(mbr.nic)}
+                                class={`px-2.5 py-1 text-[9.5px] font-black rounded select-none cursor-pointer border ${absentNics.includes(mbr.nic) ? 'bg-rose-50 text-lt-red border-lt-red-bd' : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'}`}
+                              >
+                                {absentNics.includes(mbr.nic) ? '❌ Checked Absent' : '✓ Present'}
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Photo guidelines */}
+                      <div class="flex items-center gap-3 p-3 rounded-lg border bg-rose-50/10 border-rose-100">
+                        <span class="text-lg">{matchedPr.photoAllowed ? '📸' : '🚫'}</span>
+                        <div class="flex flex-col">
+                          <span class="font-black text-[11px] text-slate-800">Photography Permission Protocol</span>
+                          <p class="text-[10px] text-slate-400 leading-normal">
+                            This guest profile has been flagged as **{matchedPr.photoAllowed ? 'CAMERAS ALLOWED' : 'CAMERAS STRICTLY PROHIBITED'}** inside our plant operations boundaries.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="pt-2">
+                        <button
+                          type="button"
+                          onClick={handleCheckinPreRegAction}
+                          disabled={isSubmitting}
+                          class="btn btn-primary w-full py-3 text-center uppercase tracking-wider font-extrabold"
+                        >
+                          {isSubmitting ? 'Processing Check-In...' : '✓ Issue Badge & Record Entrance'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div class="text-center py-6 text-[10.5px] text-slate-400 italic">No search queried. Type guests NIC and press enter.</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column: Walk-In Register */}
+              <div class="bg-white border border-lt-border rounded-xl shadow-3xs overflow-hidden">
+                <div class="bg-gray-50 border-b border-lt-border px-5 py-4 flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-4 bg-lt-red rounded-2xs"></span>
+                    <h3 class="font-display font-black text-xs text-lt-navy uppercase tracking-wider">Lobby Walk-In Registration Office</h3>
+                  </div>
+                  <span class="text-[9.5px] font-black text-lt-red font-mono bg-lt-red-lt rounded border border-lt-red-bd px-1.5 py-0.5">Ad-hoc Access</span>
+                </div>
+
+                <form onSubmit={handleWiSubmit} class="p-5 space-y-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Guest Name <span class="text-lt-red">*</span></label>
+                      <input type="text" class="inp" placeholder="Sugath Perera" value={wiName} onChange={e => setWiName(e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))} />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">NIC / Passport No. <span class="text-lt-red">*</span></label>
+                      <input type="text" class="inp" placeholder="199512344553" value={wiNic} onChange={e => handleWiNicChange(e.target.value)} />
+                      {nicHint && <span class="text-[9.5px] font-bold text-[#e11d48] font-mono mt-0.5">{nicHint}</span>}
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Contact Phone <span class="text-lt-red">*</span></label>
+                      <input type="tel" class="inp" placeholder="0711122334" value={wiPhone} onChange={e => setWiPhone(e.target.value.replace(/\D/g, ''))} />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Company <span class="text-slate-400 font-semibold">(Optional)</span></label>
+                      <input type="text" class="inp" placeholder="Prym Lanka" value={wiCompany} onChange={e => setWiCompany(e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Host Employee <span class="text-lt-red">*</span></label>
+                      <select class="inp bg-white text-slate-800" value={wiHost} onChange={e => setWiHost(e.target.value)}>
+                        <option value="">Select Host…</option>
+                        {hosts.map(h => (
+                          <option key={h.name} value={h.name}>{h.name} — {h.designation} {h.dept ? `(${h.dept})` : ''}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Purpose of Visit <span class="text-lt-red">*</span></label>
+                      <input type="text" class="inp" placeholder="Technical Troubleshooting" value={wiPurpose} onChange={e => setWiPurpose(e.target.value)} />
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Vehicle No. <span class="text-slate-400 font-semibold">(Optional)</span></label>
+                      <input type="text" class="inp" placeholder="WP CAS-4952" value={wiVehicle} onChange={e => setWiVehicle(e.target.value)} />
+                    </div>
+                    <div class="flex flex-col gap-1 bg-slate-50 border border-slate-200 rounded p-2.5">
+                      <label class="text-[10px] uppercase font-bold text-slate-500 tracking-wide">Photo Permissions <span class="text-lt-red">*</span></label>
+                      <div class="grid grid-cols-2 gap-1.5 mt-1">
+                        <button type="button" onClick={() => setWiPhotoAllowed(true)} class={`py-1 text-[11px] font-bold rounded cursor-pointer transition-all ${wiPhotoAllowed === true ? 'bg-emerald-600 border-emerald-600 text-white font-black' : 'bg-white border-slate-200'}`}>Allow</button>
+                        <button type="button" onClick={() => setWiPhotoAllowed(false)} class={`py-1 text-[11px] font-bold rounded cursor-pointer transition-all ${wiPhotoAllowed === false ? 'bg-rose-600 border-rose-600 text-white font-black' : 'bg-white border-slate-200'}`}>Prohibit</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-[10px] uppercase font-bold text-lt-muted tracking-wide">Select AUTHORISED ACCESS ZONES <span class="text-lt-red">*</span></label>
+                    <div class="grid grid-cols-3 gap-1.5">
+                      {zones.map(z => {
+                        const isSelected = wiSelectedZones.includes(z.name);
+                        const colors = {
+                          green: isSelected ? 'bg-emerald-500 text-white' : 'bg-emerald-50 text-emerald-700',
+                          yellow: isSelected ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-700',
+                          amber: isSelected ? 'bg-orange-50 text-white' : 'bg-orange-50 text-orange-700',
+                          red: isSelected ? 'bg-rose-500 text-white' : 'bg-rose-50 text-rose-700'
+                        };
+                        return (
+                          <button
+                            key={z.name}
+                            type="button"
+                            onClick={() => toggleWiZone(z.name)}
+                            class={`px-2 py-1 text-[9.5px] rounded border font-black text-center cursor-pointer select-none transition-all ${colors[z.color]} hover:bg-slate-100`}
+                          >
+                            {z.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div class="pt-2">
+                    <button type="submit" disabled={isSubmitting} class="w-full btn btn-primary py-3 justify-center text-xs uppercase tracking-wider font-extrabold select-none">
+                      {isSubmitting ? 'Registering entrance...' : '✓ Issue badge & Record Entrance'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ── Daily Log Registry View Subcomponent ──────────────────────────────────
+      function VisitorLogView({ visitors, onVisitorDelete, onCheckout }) {
+        const [search, setSearch] = React.useState('');
+        const [statusFilter, setStatusFilter] = React.useState('all');
+
+        const filtered = visitors.filter(v => {
+          const mText = (v.name + ' ' + v.nic + ' ' + v.company + ' ' + v.pass).toLowerCase();
+          const matchesSearch = mText.includes(search.toLowerCase());
+          const matchesStatus = statusFilter === 'all' ? true : v.status === statusFilter;
+          return matchesSearch && matchesStatus;
+        });
+
+        // Simulating Excel Spreadsheet Export
+        const exportExcel = () => {
+          let rows = [["Badge ID", "Visitor Name", "NIC/Passport", "Company", "Purpose", "Host Employee", "Pass Color", "Check In Time", "Check Out Time"]];
+          filtered.forEach(v => {
+            rows.push([
+              v.pass,
+              v.name,
+              v.nic,
+              v.company,
+              v.purpose,
+              v.hostName,
+              v.color,
+              new Date(v.checkIn).toLocaleString(),
+              v.checkOut ? new Date(v.checkOut).toLocaleString() : "ON-SITE"
+            ]);
+          });
+          const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.map(val => `"${val}"`).join(",")).join("\n");
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", `lanka_tiles_vms_log_${new Date().toISOString().slice(0,10)}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        };
+
+        return (
+          <div class="bg-white border border-lt-border rounded-xl shadow-3xs overflow-hidden">
+            <div class="bg-gray-50 border-b border-lt-border px-5 py-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-slate-800">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-4 bg-lt-navy rounded-2xs"></span>
+                <h3 class="font-display font-black text-xs text-lt-navy uppercase tracking-wider">Complete Visitor Registry Archive Logs</h3>
+              </div>
+              <button 
+                onClick={exportExcel} 
+                class="btn btn-primary bg-emerald-600 hover:bg-emerald-700 btn-sm text-[10.5px]"
+              >
+                📥 Export Registry Spreadsheet
+              </button>
+            </div>
+
+            {/* Filter Panel */}
+            <div class="p-4 bg-slate-50 border-b border-lt-border flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="Search database by guest name, plate or badge..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                class="inp flex-1"
+              />
+              <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} class="inp w-36 bg-white text-slate-800">
+                <option value="all">All Visitors</option>
+                <option value="in">Currently In-Site</option>
+                <option value="out">Checked Out</option>
+              </select>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left font-semibold text-[11.5px] text-slate-800">
+                <thead>
+                  <tr class="bg-slate-100 border-b text-[10px] text-slate-400 font-bold uppercase select-none">
+                    <th class="py-3 px-4">Pass Card ID</th>
+                    <th class="py-3 px-4">Visitor/Team</th>
+                    <th class="py-3 px-4">NIC/Passport</th>
+                    <th class="py-3 px-4">Host Details</th>
+                    <th class="py-3 px-4">Authorised Zones</th>
+                    <th class="py-3 px-4">Arrival Date/Time</th>
+                    <th class="py-3 px-4">Checkout Date/Time</th>
+                    <th class="py-3 px-4 text-right">Activity</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  {filtered.length === 0 ? (
+                    <tr>
+                      <td colspan="8" class="text-center py-10 text-xs italic text-slate-400">No visitors logged inside database registers matching conditions.</td>
+                    </tr>
+                  ) : (
+                    filtered.map(v => {
+                      const colorMap = {
+                        green: 'bg-emerald-500 text-white',
+                        yellow: 'bg-amber-500 text-white',
+                        amber: 'bg-orange-500 text-white',
+                        red: 'bg-rose-500 text-white'
+                      };
+                      return (
+                        <tr key={v.id} class="hover:bg-slate-50/50 transition-colors">
+                          <td class="py-3 px-4">
+                            <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-black ${colorMap[v.color]}`}>{v.pass}</span>
+                          </td>
+                          <td class="py-3 px-4">
+                            <div class="flex flex-col font-black">
+                              <span>{v.name}</span>
+                              <span class="text-[9.5px] font-bold text-slate-400 font-sans">{v.company || 'Private Guest'} {v.isGroup ? `(Group of ${v.groupCount})` : ''}</span>
+                            </div>
+                          </td>
+                          <td class="py-3 px-4 font-mono text-xs">{v.nic}</td>
+                          <td class="py-3 px-4 flex flex-col">
+                            <span class="font-bold text-slate-700">{v.hostName}</span>
+                            <span class="text-[9.5px] text-slate-400">{v.hostDept} — {v.hostDesignation}</span>
+                          </td>
+                          <td class="py-3 px-4">
+                            <div class="flex flex-wrap gap-1 max-w-[140px]">
+                              {v.zones.map(z => (
+                                <span key={z} class="bg-slate-100 text-[8.5px] font-bold text-slate-600 px-1 py-0.5 rounded">{z}</span>
+                              ))}
+                            </div>
+                          </td>
+                          <td class="py-3 px-4 text-slate-500">{new Date(v.checkIn).toLocaleString()}</td>
+                          <td class="py-3 px-4 text-slate-500">
+                            {v.status === 'in' ? (
+                              <span class="text-emerald-600 font-bold animate-pulse-slow">● On Site</span>
+                            ) : (
+                              new Date(v.checkOut).toLocaleString()
+                            )}
+                          </td>
+                          <td class="py-3 px-4 text-right">
+                            {v.status === 'in' && (
+                              <button onClick={() => onCheckout(v.id)} class="btn btn-danger btn-xs select-none">Checkout ↩</button>
+                            )}
+                            <button onClick={() => onVisitorDelete(v.id)} class="text-slate-300 hover:text-lt-red p-1 cursor-pointer">
+                              <SvgIcons.Trash />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      }
+
+      // ── Admin Setup view component ────────────────────────────────────────────
+      function AdminView({ hosts, zones, visitors, preRegs, onVisitorDelete, onVisitorUpdate, onPreRegDelete, onSingleHostAdd, onHostDelete, onZoneAdd, onZoneDelete, onForceCheckout, onClearAll, onPassTotalsUpdate, onPasswordUpdate, projectId, adminPw, showAlert, showConfirm }) {
+        const [passTotals, setPassTotals] = React.useState({
+          G: DEFAULT_CONFIG.passTotals.G,
+          Y: DEFAULT_CONFIG.passTotals.Y,
+          A: DEFAULT_CONFIG.passTotals.A,
+          R: DEFAULT_CONFIG.passTotals.R
+        });
+
+        // Forms State
+        const [hnName, setHnName] = React.useState('');
+        const [hnDesig, setHnDesig] = React.useState('');
+        const [hnDept, setHnDept] = React.useState('');
+        const [hnPhone, setHnPhone] = React.useState('');
+
+        const [znName, setZnName] = React.useState('');
+        const [znColor, setZnColor] = React.useState('green');
+
+        const [np1, setNp1] = React.useState('');
+        const [np2, setNp2] = React.useState('');
+
+        const [enteredPw, setEnteredPw] = React.useState('');
+        const [unlocked, setUnlocked] = React.useState(false);
+
+        const handleAuthCheck = (e) => {
+          if (e) e.preventDefault();
+          if (enteredPw === adminPw || enteredPw === 'lanka2026') {
+            setUnlocked(true);
+          } else {
+            showAlert('Incorrect administrator access key code. Try defaults: lanka2026', 'Access Denied');
+          }
+        };
+
+        const handlePassTotalsUpdateAction = () => {
+          onPassTotalsUpdate(passTotals);
+          showAlert('Pass threshold capacities updated inside SQLite cache.', 'Database Settings Updated');
+        };
+
+        const handlePassUpdate = () => {
+          if (!np1 || np1 !== np2) return showAlert('New password matching mismatch.', 'Check Values');
+          onPasswordUpdate(np1);
+          showAlert('Security administrator master pass updated successfully.', 'Task Saved');
+          setNp1('');
+          setNp2('');
+        };
+
+        const handleAddHost = (e) => {
+          if (e) e.preventDefault();
+          if (!hnName.trim() || !hnDesig.trim()) return showAlert('Enter both Host Name and Designation.', 'Fields Missing');
+          onSingleHostAdd({
+            name: hnName,
+            designation: hnDesig,
+            dept: hnDept,
+            phone: hnPhone
+          });
+          showAlert(`Host Employee "${hnName}" registered in Lanka Tiles Directory.`);
+          setHnName('');
+          setHnDesig('');
+          setHnDept('');
+          setHnPhone('');
+        };
+
+        const handleAddZone = (e) => {
+          if (e) e.preventDefault();
+          if (!znName.trim()) return showAlert('Enter plant zone identifier identifier.', 'Fields Missing');
+          onZoneAdd({
+            name: znName,
+            color: znColor
+          });
+          showAlert(`Authorised plant zone "${znName}" registered successfully.`);
+          setZnName('');
+        };
+
+        if (!unlocked) {
+          return (
+            <div class="max-w-md mx-auto bg-white rounded-xl shadow-md border border-lt-border p-6 text-slate-850 space-y-4 pt-12 mt-12 text-center text-xs">
+              <div class="w-12 h-12 bg-lt-navy-md rounded-full flex items-center justify-center mx-auto text-white">🔒</div>
+              <h2 class="text-xl font-display font-black text-lt-navy uppercase">Authentication Lock</h2>
+              <p class="text-slate-400">Access to host registries directories, badge parameters quotas, and system purges requires key verification.</p>
+              
+              <form onSubmit={handleAuthCheck} class="space-y-3 pt-2">
+                <input
+                  type="password"
+                  placeholder="Enter admin password (e.g. lanka2026)"
+                  value={enteredPw}
+                  onChange={e => setEnteredPw(e.target.value)}
+                  class="inp w-full text-center text-sm font-semibold h-11"
+                  autofocus
+                />
+                <button type="submit" class="w-full btn btn-primary py-3 justify-center uppercase font-black">
+                  Unlock Administration
+                </button>
+              </form>
+            </div>
+          );
+        }
+
+        return (
+          <div class="space-y-6">
+            <div class="flex flex-col gap-1">
+              <h2 class="text-2xl font-display font-black text-lt-navy uppercase tracking-tight">System Administration Settings</h2>
+              <p class="text-xs text-lt-muted font-medium">Control host databases, authorized zones rosters, and database purging actions.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {/* Host Directory Config */}
+              <div class="bg-white border rounded-xl shadow-3xs overflow-hidden">
+                <div class="bg-gray-50 border-b px-4 py-3 flex items-center justify-between">
+                  <span class="font-display font-black text-2xs text-lt-navy uppercase tracking-wider">Employee Host Directory ({hosts.length})</span>
+                  <span class="text-[9px] font-black text-slate-400 font-mono">Registry File</span>
+                </div>
+                
+                <div class="p-4 border-b bg-slate-50">
+                  <span class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Quick Register Single Staff</span>
+                  <form onSubmit={handleAddHost} class="grid grid-cols-2 gap-2 mt-2">
+                    <input type="text" class="inp h-8" placeholder="Name *" value={hnName} onChange={e => setHnName(e.target.value.replace(/[^a-zA-Z\s.\-']/g, ''))} />
+                    <input type="text" class="inp h-8" placeholder="Designation *" value={hnDesig} onChange={e => setHnDesig(e.target.value)} />
+                    <input type="text" class="inp h-8" placeholder="Dept (Optional)" value={hnDept} onChange={e => setHnDept(e.target.value)} />
+                    <input type="text" class="inp h-8" placeholder="Mobile" value={hnPhone} onChange={e => setHnPhone(e.target.value.replace(/\D/g, ''))} />
+                    <button type="submit" class="col-span-2 btn btn-primary py-1.5 justify-center mt-1 select-none">Add Host Employee Record</button>
+                  </form>
+                </div>
+
+                <div class="max-h-60 overflow-y-auto divide-y divide-slate-100 text-xs">
+                  {hosts.map(h => (
+                    <div key={h.name} class="p-3 flex items-center justify-between hover:bg-slate-50 font-bold">
+                      <div class="flex flex-col">
+                        <span class="text-slate-800 font-black">{h.name}</span>
+                        <span class="text-[10px] text-slate-400">{h.dept} — {h.designation} {h.phone ? `(${h.phone})` : ''}</span>
+                      </div>
+                      <button onClick={() => onHostDelete(h.name)} class="text-slate-300 hover:text-lt-red px-2 cursor-pointer">
+                        <SvgIcons.Trash />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Authorised Access Zones Configuration */}
+              <div class="bg-white border rounded-xl shadow-3xs overflow-hidden">
+                <div class="bg-gray-50 border-b px-4 py-3 flex items-center justify-between">
+                  <span class="font-display font-black text-2xs text-lt-navy uppercase tracking-wider">Authorised plant zones ({zones.length})</span>
+                  <span class="text-[9px] font-black text-slate-400 font-mono">Color Clearance Settings</span>
+                </div>
+                
+                <div class="p-4 border-b bg-slate-50">
+                  <span class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Add Authorized Location Room</span>
+                  <form onSubmit={handleAddZone} class="grid grid-cols-3 gap-2 mt-2">
+                    <input type="text" class="inp h-8 col-span-2" placeholder="Plant Area Identifier *" value={znName} onChange={e => setZnName(e.target.value)} />
+                    <select class="inp h-8 bg-white" value={znColor} onChange={e => setZnColor(e.target.value)}>
+                      <option value="green">Green Pass</option>
+                      <option value="yellow">Yellow Pass</option>
+                      <option value="amber">Amber Pass</option>
+                      <option value="red">Red Pass</option>
+                    </select>
+                    <button type="submit" class="col-span-3 btn btn-primary py-1.5 justify-center mt-1 select-none">Add Authorized Location</button>
+                  </form>
+                </div>
+
+                <div class="max-h-60 overflow-y-auto divide-y divide-slate-100 text-[11px]">
+                  {zones.map(z => {
+                    const badgeStyles = {
+                      green: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                      yellow: 'bg-amber-100 text-amber-800 border-amber-300',
+                      amber: 'bg-orange-100 text-orange-800 border-orange-300',
+                      red: 'bg-rose-100 text-rose-800 border-badge-300'
+                    };
+                    return (
+                      <div key={z.name} class="p-3 flex items-center justify-between hover:bg-slate-50 font-bold text-slate-800">
+                        <span class="font-black">{z.name}</span>
+                        <div class="flex items-center gap-2">
+                          <span class={`px-2 py-0.5 rounded text-[8.5px] uppercase font-black border ${badgeStyles[z.color]}`}>{z.color} Group</span>
+                          <button onClick={() => onZoneDelete(z.name)} class="text-slate-300 hover:text-lt-red px-1 cursor-pointer">
+                            <SvgIcons.Trash />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+              {/* Safety pass limits capacity panel */}
+              <div class="bg-white border rounded-xl shadow-3xs overflow-hidden">
+                <div class="bg-gray-50 border-b px-4 py-3 flex items-center justify-between">
+                  <span class="font-display font-black text-2xs text-lt-navy uppercase tracking-wider">Pass capacity limits &amp; thresholds</span>
+                  <span class="text-[9px] font-black text-slate-400 font-mono">Quotas</span>
+                </div>
+                <div class="p-5 space-y-4">
+                  <div class="grid grid-cols-2 gap-4 text-xs font-semibold text-slate-800">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted font-mono">Green Passes Capacity</label>
+                      <input type="number" class="inp" value={passTotals.G} onChange={e => setPassTotals({ ...passTotals, G: Number(e.target.value) })} />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted font-mono">Yellow Passes Capacity</label>
+                      <input type="number" class="inp" value={passTotals.Y} onChange={e => setPassTotals({ ...passTotals, Y: Number(e.target.value) })} />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted font-mono">Amber Passes Capacity</label>
+                      <input type="number" class="inp" value={passTotals.A} onChange={e => setPassTotals({ ...passTotals, A: Number(e.target.value) })} />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted font-mono">Red Passes Capacity</label>
+                      <input type="number" class="inp" value={passTotals.R} onChange={e => setPassTotals({ ...passTotals, R: Number(e.target.value) })} />
+                    </div>
+                  </div>
+                  <button onClick={handlePassTotalsUpdateAction} class="btn btn-primary btn-sm mt-1 select-none">💾 Sync Quota Thresholds</button>
+                </div>
+              </div>
+
+              {/* Master System Keys, database reset */}
+              <div class="bg-white border rounded-xl shadow-3xs overflow-hidden text-xs">
+                <div class="bg-gray-50 border-b px-4 py-3 flex items-center justify-between">
+                  <span class="font-display font-black text-2xs text-lt-navy uppercase tracking-wider">System maintenance, security keys</span>
+                  <span class="text-[9px] font-black text-slate-400 font-mono">Danger Zone</span>
+                </div>
+                
+                <div class="p-5 space-y-4 leading-normal font-semibold text-slate-700">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted uppercase">New Password</label>
+                      <input type="password" class="inp" value={np1} onChange={e => setNp1(e.target.value)} />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <label class="text-[10px] uppercase font-bold text-lt-muted uppercase">Confirm Password</label>
+                      <input type="password" class="inp" value={np2} onChange={e => setNp2(e.target.value)} />
+                    </div>
+                  </div>
+                  <button onClick={handlePassUpdate} class="btn btn-primary btn-sm select-none">Update Admin Password</button>
+
+                  <div class="h-[1px] bg-slate-100 my-2"></div>
+
+                  <div class="bg-rose-50 border border-rose-200 rounded p-3 space-y-2">
+                    <h5 class="text-[11px] font-black text-lt-red uppercase">Purge Database Registers</h5>
+                    <p class="text-[10.5px] text-slate-500 leading-tight">This will permanently delete all visitor registers, outstanding pending pre-registrations, and reset sequences to zero inside SQLite LocalStore.</p>
+                    <button 
+                      onClick={() => showConfirm('WARNING: This will permanently delete ALL active records and pre-registrations history logs from local storage. Tap Proceed to confirm purge.', () => { onClearAll().then(() => showAlert('Database records cleared successfully.', 'System Purged')); })}
+                      class="btn btn-danger btn-xs select-none shadow-3xs"
+                    >
+                      Purge Active Registry Cache ⚠️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ── Bootstrap Render application ──────────────────────────────────────────
+      const rootDiv = document.getElementById('root');
+      const rootElement = ReactDOM.createRoot(rootDiv);
+      rootElement.render(<App />);
+    </script>
+  </body>
+</html>

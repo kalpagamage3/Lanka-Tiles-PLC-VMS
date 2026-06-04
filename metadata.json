@@ -1,0 +1,6 @@
+{
+  "name": "Lanka Tiles Visitor Management System",
+  "description": "Visitor Management System for Lanka Tiles PLC to manage and sync visitors, hosts, color-coded access zones, and pre-registration records in real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
