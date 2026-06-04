@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Menu } from 'lucide-react';
 import { signInAnonymously } from 'firebase/auth';
-import { auth, fdb, ensureDefaultData } from './firebase';
+import { auth, fdb, ensureDefaultData, dbMode, subscribeDbMode, switchToLocalMode } from './firebase';
 import { Visitor, PreRegistration, Host, Zone, VMSConfig, Member, AccessColor } from './types';
 import Sidebar from './components/Sidebar';
 import DashboardView from './components/DashboardView';
@@ -22,6 +22,7 @@ export default function App() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [currentDbMode, setCurrentDbMode] = useState<'firebase' | 'local'>('firebase');
 
   // Dialog/Modal Overlays State
   const [customAlert, setCustomAlert] = useState<{ message: string; title?: string } | null>(null);
@@ -42,6 +43,13 @@ export default function App() {
     });
   };
 
+  // Listen to DB Mode changes
+  useEffect(() => {
+    return subscribeDbMode((m) => {
+      setCurrentDbMode(m);
+    });
+  }, []);
+
   // 1. Initialise Anonymous Auth and default data seed
   useEffect(() => {
     async function initApp() {
@@ -61,7 +69,17 @@ export default function App() {
       }
     }
     initApp();
-  }, []);
+
+    // Setup an automatic backup timeout of 2.0 seconds to prevent stuck loading loop on unconfigured domains
+    const timeoutTimer = setTimeout(() => {
+      if (!dataLoaded || !config) {
+        console.warn('[VMS Load Timeout] Cloud connection slow or restricted. Seamlessly activated local fallback.');
+        switchToLocalMode();
+      }
+    }, 2000);
+
+    return () => clearTimeout(timeoutTimer);
+  }, [dataLoaded, config]);
 
   // 2. Setup real-time Firestore listeners once auth is active
   useEffect(() => {
@@ -433,6 +451,18 @@ export default function App() {
 
         {/* Primary Main Content Panel */}
         <main className="flex-1 md:ml-64 p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-56px)] md:min-h-screen max-w-7xl mx-auto w-full">
+          {currentDbMode === 'local' && (
+            <div className="mb-6 bg-amber-500/10 border border-amber-500/20 text-amber-800 p-3.5 px-4 rounded-xl flex items-center justify-between text-[11.5px] font-semibold gap-4 shadow-3xs animate-fade-in">
+              <span className="flex items-center gap-3">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                <span><strong>Operating in Local-Only Backup Mode</strong>. Your cloud domain could be unconfigured in the Firebase Console (authorized domains list). All features will persist securely inside local storage.</span>
+              </span>
+            </div>
+          )}
+
           {view === 'dashboard' && (
             <DashboardView 
               visitors={visitors}
